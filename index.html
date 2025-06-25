@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Adder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px; border-radius: 5px; font-family: Arial, sans-serif; z-index: 9999; position: relative;">
+      <strong>📌 Static Deployment Notice:</strong> This is a static version deployed via Public-Link.
+      Backend functionality has been disabled. Forms and API calls will show mock responses.
+    </div>
+    <script>
+    // Intercept all fetch calls and form submissions for static deployment
+    (function() {
+      const originalFetch = window.fetch;
+      window.fetch = function(url, options) {
+        console.warn('API call intercepted in static deployment:', url);
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: 'OK (Mock Response)',
+          json: () => Promise.resolve({
+            result: 'This is a mock response from static deployment',
+            message: 'Backend functionality is not available in GitHub Pages',
+            success: true
+          }),
+          text: () => Promise.resolve('Mock response: Backend not available in static deployment')
+        });
+      };
+
+      // Intercept form submissions
+      document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Form submission intercepted: This is a static deployment. Backend functionality is not available.');
+            return false;
+          });
+        });
+      });
+
+      // Override XMLHttpRequest
+      const originalXHR = window.XMLHttpRequest;
+      window.XMLHttpRequest = function() {
+        const xhr = new originalXHR();
+        const originalSend = xhr.send;
+        xhr.send = function(data) {
+          console.warn('XMLHttpRequest intercepted in static deployment');
+          setTimeout(() => {
+            xhr.readyState = 4;
+            xhr.status = 200;
+            xhr.responseText = JSON.stringify({
+              result: 'Mock response from static deployment',
+              message: 'Backend functionality is not available'
+            });
+            if (xhr.onreadystatechange) xhr.onreadystatechange();
+          }, 100);
+        };
+        return xhr;
+      };
+    })();
+    </script>
+  <div class="container">
+    <h1>Number Adder</h1>
+    <form action="/add" method="POST">
+      <input type="number" name="num1" placeholder="Enter first number" required>
+      <input type="number" name="num2" placeholder="Enter second number" required>
+      <button type="submit">Add Numbers</button>
+    </form>
+  </div>
+</body>
+</html> 
